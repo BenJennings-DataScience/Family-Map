@@ -2,10 +2,10 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [password, setPassword] = useState('')
@@ -34,6 +34,33 @@ export default function LoginPage() {
   }
 
   return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <input
+        type="password"
+        autoFocus
+        placeholder="Password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white"
+      />
+
+      {error && (
+        <p className="text-sm text-red-500 text-center">{error}</p>
+      )}
+
+      <button
+        type="submit"
+        disabled={loading || !password}
+        className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-semibold py-2 rounded-lg transition-colors text-sm"
+      >
+        {loading ? 'Checking...' : 'Enter'}
+      </button>
+    </form>
+  )
+}
+
+export default function LoginPage() {
+  return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 px-4">
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 w-full max-w-sm p-8">
         <div className="text-center mb-8">
@@ -41,28 +68,9 @@ export default function LoginPage() {
           <p className="text-sm text-slate-400 mt-1">Enter the password to continue</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="password"
-            autoFocus
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white"
-          />
-
-          {error && (
-            <p className="text-sm text-red-500 text-center">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading || !password}
-            className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-semibold py-2 rounded-lg transition-colors text-sm"
-          >
-            {loading ? 'Checking...' : 'Enter'}
-          </button>
-        </form>
+        <Suspense>
+          <LoginForm />
+        </Suspense>
       </div>
     </main>
   )
