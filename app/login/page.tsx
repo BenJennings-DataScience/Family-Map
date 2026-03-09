@@ -17,18 +17,22 @@ function LoginForm() {
     setLoading(true)
     setError('')
 
-    const res = await fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
-    })
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      })
 
-    if (res.ok) {
-      const from = searchParams.get('from') ?? '/'
-      router.push(from)
-      router.refresh()
-    } else {
-      setError('Incorrect password')
+      if (res.ok) {
+        const from = searchParams.get('from') ?? '/'
+        window.location.href = from
+      } else {
+        setError('Incorrect password')
+        setLoading(false)
+      }
+    } catch {
+      setError('Something went wrong. Please try again.')
       setLoading(false)
     }
   }
